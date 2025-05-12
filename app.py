@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 import os
 from train import train_from_csv
-from utils.training_utils import TempPredictor
+from utils.training_utils import TempPredictorV2
 
 st.title("🌡️ 表面温度推定AIアプリ（モデル選択・逆スケーリング対応）")
 
