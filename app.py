@@ -29,21 +29,24 @@ if uploaded_file:
     st.write("📄 データプレビュー", df.head())
 
     # モード分岐
-   if "T_surface" not in df.columns:
-    st.warning("⚠ 推論モード：T_surfaceが存在しません")
+       if "T_surface" not in df.columns:
+        st.warning("⚠ 推論モード：T_surfaceが存在しません")
 
-    model = load_latest_model(TempPredictor)
+        model = load_latest_model(TempPredictor)
 
-    # 推論実行
-    preds = []
-    window_size = 50
-    for i in range(len(df) - window_size):
-        x = df.iloc[i:i+window_size][['T_1mm', 'T_5mm', 'T_10mm']].values
-        x_tensor = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
-        y_pred = model(x_tensor).squeeze().item()
-        preds.append(y_pred)
+        # 推論実行
+        preds = []
+        window_size = 50
+        for i in range(len(df) - window_size):
+            x = df.iloc[i:i+window_size][['T_1mm', 'T_5mm', 'T_10mm']].values
+            x_tensor = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
+            y_pred = model(x_tensor).squeeze().item()
+            preds.append(y_pred)
 
-    # 結果の描画
-    st.subheader("🔍 推定された表面温度")
-    st.line_chart(preds)
-
+        # 結果の描画
+        st.subheader("🔍 推定された表面温度")
+        df_result = pd.DataFrame({
+            'time': df['time'].iloc[window_size:].values,
+            'predicted_T_surface': preds
+        })
+        st.line_chart(df_result.set_index("time"))
