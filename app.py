@@ -55,13 +55,13 @@ if uploaded_file:
                 preds.append(y_pred_actual)
 
             df_result = pd.DataFrame({
-                'time': df['time'].iloc[window_size:].values,
-                'predicted_T_surface': preds,
-                'T_1mm': df['T_1mm'].iloc[window_size:].values,
-                'T_5mm': df['T_5mm'].iloc[window_size:].values,
-                'T_10mm': df['T_10mm'].iloc[window_size:].values,
+            'time': df['time'].iloc[window_size:].values,
+            'T_1mm': df['T_1mm'].iloc[window_size:].values,
+            'T_5mm': df['T_5mm'].iloc[window_size:].values,
+            'T_10mm': df['T_10mm'].iloc[window_size:].values,
+            'predicted_T_surface': preds_surface,
+            f'predicted_T_{depth_mm:.1f}mm': preds_custom,
             })
-            st.subheader("📈 センサ応答 + 推定された表面温度")
             st.line_chart(df_result.set_index("time"))
 
             # 👇 ここに追加
