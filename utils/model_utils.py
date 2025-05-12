@@ -2,13 +2,12 @@ import torch
 from datetime import datetime
 import os
 
-def save_model_by_date(model, dir="model/"):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+def save_model_by_date(model, model_dir="model"):
+    os.makedirs(model_dir, exist_ok=True)
     date_str = datetime.now().strftime("%Y%m%d")
-    path = os.path.join(dir, f"lstm_{date_str}.pt")
-    torch.save(model.state_dict(), path)
-    return path
+    model_path = os.path.join(model_dir, f"lstm_{date_str}.pt")
+    torch.save(model.state_dict(), model_path)
+    return model_path
 
 def load_latest_model(model_class, model_dir="model/"):
     model_files = sorted(
