@@ -24,7 +24,7 @@ if uploaded_file:
             st.success(f"✅ 学習完了: {model_path}")
             df_log = pd.DataFrame(log)
             st.line_chart(df_log.set_index("epoch")[["loss", "mae", "rmse"]])
-    else:
+        else:
         st.warning("⚠ 推論モード：T_surfaceが存在しません")
 
         model = load_latest_model(TempPredictor)
@@ -38,10 +38,14 @@ if uploaded_file:
             y_pred = model(x_tensor).squeeze().item()
             preds.append(y_pred)
 
-        # 結果の描画
-        st.subheader("🔍 推定された表面温度")
+        # 結果の描画用 DataFrame
         df_result = pd.DataFrame({
             'time': df['time'].iloc[window_size:].values,
-            'predicted_T_surface': preds
+            'predicted_T_surface': preds,
+            'T_1mm': df['T_1mm'].iloc[window_size:].values,
+            'T_5mm': df['T_5mm'].iloc[window_size:].values,
+            'T_10mm': df['T_10mm'].iloc[window_size:].values,
         })
+
+        st.subheader("📈 センサ応答 + 推定された表面温度")
         st.line_chart(df_result.set_index("time"))
