@@ -24,7 +24,7 @@ if uploaded_file:
             st.success(f"✅ 学習完了: {model_path}")
             df_log = pd.DataFrame(log)
             st.line_chart(df_log.set_index("epoch")[["loss", "mae", "rmse"]])
-        else:
+    else:
         st.warning("⚠ 推論モード：T_surfaceが存在しません")
 
         model = load_latest_model(TempPredictor)
@@ -49,3 +49,4 @@ if uploaded_file:
 
         st.subheader("📈 センサ応答 + 推定された表面温度")
         st.line_chart(df_result.set_index("time"))
+
