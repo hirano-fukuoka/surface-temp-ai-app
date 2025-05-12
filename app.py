@@ -63,3 +63,15 @@ if uploaded_file:
             })
             st.subheader("📈 センサ応答 + 推定された表面温度")
             st.line_chart(df_result.set_index("time"))
+
+            # 👇 ここに追加
+            csv_download = df_result.copy()
+            csv_download.reset_index(inplace=True)
+            csv_file = csv_download.to_csv(index=False).encode("utf-8")
+
+            st.download_button(
+                label="📥 推定結果をCSVでダウンロード",
+                data=csv_file,
+                file_name="predicted_surface_temperature.csv",
+                mime="text/csv"
+            )
