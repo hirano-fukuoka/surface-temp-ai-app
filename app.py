@@ -36,7 +36,7 @@ if uploaded_file:
 
         if selected_model:
             model_path = os.path.join(model_dir, selected_model)
-            model = TempPredictor()
+            model = TempPredictorV2()
             model.load_state_dict(torch.load(model_path, map_location="cpu"))
             model.eval()
 
