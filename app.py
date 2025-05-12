@@ -6,7 +6,7 @@ import os
 from train import train_from_csv
 from utils.training_utils import TempPredictor
 
-st.title("🌡️ 表面温度推定AIアプリ（モデル選択対応）")
+st.title("🌡️ 表面温度推定AIアプリ（モデル選択・逆スケーリング対応）")
 
 uploaded_file = st.file_uploader("CSVファイルをアップロード", type="csv")
 if uploaded_file:
@@ -27,7 +27,6 @@ if uploaded_file:
     else:
         st.warning("⚠ 推論モード：T_surfaceが存在しません")
 
-        # モデル選択 UI
         model_dir = "model"
         model_files = sorted(
             [f for f in os.listdir(model_dir) if f.endswith(".pt")],
@@ -41,16 +40,20 @@ if uploaded_file:
             model.load_state_dict(torch.load(model_path, map_location="cpu"))
             model.eval()
 
-            # 推論実行
+            # 逆スケーリング関数（MinMax 25〜100）
+            def inverse_scale(val_norm, min_temp=25.0, max_temp=100.0):
+                return val_norm * (max_temp - min_temp) + min_temp
+
             preds = []
             window_size = 50
             for i in range(len(df) - window_size):
                 x = df.iloc[i:i+window_size][['T_1mm', 'T_5mm', 'T_10mm']].values
-                x_tensor = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
-                y_pred = model(x_tensor).squeeze().item()
-                preds.append(y_pred)
+                x_scaled = (x - 25.0) / (100.0 - 25.0)
+                x_tensor = torch.tensor(x_scaled, dtype=torch.float32).unsqueeze(0)
+                y_pred_norm = model(x_tensor).squeeze().item()
+                y_pred_actual = inverse_scale(y_pred_norm)
+                preds.append(y_pred_actual)
 
-            # 結果プロット
             df_result = pd.DataFrame({
                 'time': df['time'].iloc[window_size:].values,
                 'predicted_T_surface': preds,
