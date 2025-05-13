@@ -7,7 +7,7 @@ import numpy as np
 from train import train_from_csv
 from utils.training_utils import TempPredictorV2
 
-st.title("🌡️ 任意位置温度推定AIアプリ（修正済み）")
+st.title("🌡️ 任意位置温度推定AIアプリ（推論ボタン付き）")
 
 uploaded_file = st.file_uploader("CSVファイルをアップロード", type="csv")
 if uploaded_file:
@@ -36,7 +36,7 @@ if uploaded_file:
         selected_model = st.selectbox("使用するモデルを選択してください：", model_files)
         depth_mm = st.number_input("推定したい深さ（mm）を入力", min_value=0.0, max_value=20.0, value=1.0, step=0.1)
 
-        if selected_model:
+        if selected_model and st.button("▶ 推論開始"):
             model_path = os.path.join(model_dir, selected_model)
             model = TempPredictorV2()
             model.load_state_dict(torch.load(model_path, map_location="cpu"))
